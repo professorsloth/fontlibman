@@ -57,7 +57,7 @@ def unzip(zipfile_path, files_to_unzip):
 
 def get_user_font_directory():
 	home_directory = os.environ["HOME"]
-	user_font_directory = "%s/.fonts" % (home_directory)
+	user_font_directory = os.path.join(home_directory, ".fonts")
 	return user_font_directory
 
 def copy_to_user_font_directory(path_to_directory_with_unzipped_files, files_to_keep):
