@@ -10,166 +10,177 @@ import zipfile
 TEMP_DIRECTORY = "/tmp/fontlibman/"
 
 ONLINE_FONT_LIBRARY = {
-		"fantasque": {
-			"download-url": "https://fontlibrary.org/assets/downloads/fantasque-sans-mono/db52617ba875d08cbd8e080ca3d9f756/fantasque-sans-mono.zip",
-			"keep-files": [
-				"FantasqueSansMono-BoldItalic.ttf",
-				"FantasqueSansMono-Bold.ttf",
-				"FantasqueSansMono-RegItalic.ttf",
-				"FantasqueSansMono-Regular.ttf",
-				],
-			},
-		"hack": {
-			"download-url": "https://fontlibrary.org/assets/downloads/hack/73a447a6923d284e62830693346088f7/hack.zip",
-			"keep-files": [
-				"Hack-Bold.ttf",
-				"Hack-BoldItalic.ttf",
-				"Hack-Italic.ttf",
-				"Hack-Regular.ttf",
-				],
-			},
-		"inconsolata": {
-			"download-url": "https://fontlibrary.org/assets/downloads/inconsolata/116abd9f4a9fd70b84171195ea8173d8/inconsolata.zip",
-			"keep-files": [
-				"inconsolata/Inconsolata.otf",
-				],
-			},
-		}
+        "fantasque": {
+            "download-url": "https://fontlibrary.org/assets/downloads/fantasque-sans-mono/db52617ba875d08cbd8e080ca3d9f756/fantasque-sans-mono.zip",
+            "keep-files": [
+                "FantasqueSansMono-BoldItalic.ttf",
+                "FantasqueSansMono-Bold.ttf",
+                "FantasqueSansMono-RegItalic.ttf",
+                "FantasqueSansMono-Regular.ttf",
+                ],
+            },
+        "hack": {
+            "download-url": "https://fontlibrary.org/assets/downloads/hack/73a447a6923d284e62830693346088f7/hack.zip",
+            "keep-files": [
+                "Hack-Bold.ttf",
+                "Hack-BoldItalic.ttf",
+                "Hack-Italic.ttf",
+                "Hack-Regular.ttf",
+                ],
+            },
+        "inconsolata": {
+            "download-url": "https://fontlibrary.org/assets/downloads/inconsolata/116abd9f4a9fd70b84171195ea8173d8/inconsolata.zip",
+            "keep-files": [
+                "inconsolata/Inconsolata.otf",
+                ],
+            },
+        }
 
 def download_font(download_url, font_name):
-	local_filename = TEMP_DIRECTORY + font_name + ".zip"
-	r = requests.get(download_url, stream=True, timeout=15)
-	with open(local_filename, "wb") as f:
-		for chunk in r.iter_content(chunk_size=1024):
-			if chunk:
-				f.write(chunk)
-	return local_filename
+    local_filename = TEMP_DIRECTORY + font_name + ".zip"
+    r = requests.get(download_url, stream=True, timeout=15)
+    with open(local_filename, "wb") as f:
+        for chunk in r.iter_content(chunk_size=1024):
+            if chunk:
+                f.write(chunk)
+    return local_filename
 
 def unzip(zipfile_path, files_to_unzip):
-	unzip_directory = os.path.join(TEMP_DIRECTORY, os.path.splitext(os.path.basename(zipfile_path))[0])
+    unzip_directory = os.path.join(TEMP_DIRECTORY, os.path.splitext(os.path.basename(zipfile_path))[0])
 
-	z = zipfile.ZipFile(zipfile_path)
-	for file_to_unzip in files_to_unzip:
-		z.extract(file_to_unzip, path=unzip_directory)
-	z.close()
+    z = zipfile.ZipFile(zipfile_path)
+    for file_to_unzip in files_to_unzip:
+        z.extract(file_to_unzip, path=unzip_directory)
+    z.close()
 
-	return unzip_directory
+    return unzip_directory
 
 def get_user_font_directory():
-	home_directory = os.environ["HOME"]
-	user_font_directory = os.path.join(home_directory, ".fonts")
-	return user_font_directory
+    home_directory = os.environ["HOME"]
+    user_font_directory = os.path.join(home_directory, ".fonts")
+    return user_font_directory
 
 def copy_to_user_font_directory(path_to_directory_with_unzipped_files, files_to_keep):
-	user_font_directory = get_user_font_directory()
-	for file_to_keep in files_to_keep:
-		font_file_to_copy = os.path.join(path_to_directory_with_unzipped_files, file_to_keep)
-		shutil.copy(font_file_to_copy, user_font_directory)
+    user_font_directory = get_user_font_directory()
+    for file_to_keep in files_to_keep:
+        font_file_to_copy = os.path.join(path_to_directory_with_unzipped_files, file_to_keep)
+        try:
+            shutil.copy(font_file_to_copy, user_font_directory)
+        except:
+            return False
+    return True
 
 def install_font_for_user(downloaded_font_path, files_to_keep):
-	path_to_directory_with_unzipped_files = unzip(downloaded_font_path, files_to_keep)
-	for file_to_keep in files_to_keep:
-		copy_to_user_font_directory(path_to_directory_with_unzipped_files, files_to_keep)
+    path_to_directory_with_unzipped_files = unzip(downloaded_font_path, files_to_keep)
+    for file_to_keep in files_to_keep:
+        result = copy_to_user_font_directory(path_to_directory_with_unzipped_files, files_to_keep)
+        if result == False:
+            return False
+
+    return True
 
 def ensure_directory_exists(directory_path):
-	if not os.path.exists(directory_path):
-		os.makedirs(directory_path)
+    if not os.path.exists(directory_path):
+        os.makedirs(directory_path)
 
 def install_fonts(fonts):
-	ensure_directory_exists(TEMP_DIRECTORY)
+    ensure_directory_exists(TEMP_DIRECTORY)
 
-	for font in fonts:
-		normalized_font = font.strip().lower()
-		if normalized_font in ONLINE_FONT_LIBRARY.keys():
-			download_url = ONLINE_FONT_LIBRARY[normalized_font]["download-url"]
-			downloaded_font_path = download_font(download_url, normalized_font)
-			files_to_keep = ONLINE_FONT_LIBRARY[normalized_font]["keep-files"]
-			success = install_font_for_user(downloaded_font_path, files_to_keep)
+    for font in fonts:
+        normalized_font = font.strip().lower()
+        if normalized_font in ONLINE_FONT_LIBRARY.keys():
+            download_url = ONLINE_FONT_LIBRARY[normalized_font]["download-url"]
+            downloaded_font_path = download_font(download_url, normalized_font)
+            files_to_keep = ONLINE_FONT_LIBRARY[normalized_font]["keep-files"]
+            success = install_font_for_user(downloaded_font_path, files_to_keep)
 
-			if success:
-				print("Installed %s." % (normalized_font))
-			else:
-				print("Failed to install %s." % (normalized_font))
+            if success:
+                print("Installed %s." % (normalized_font))
+            else:
+                print("Failed to install %s." % (normalized_font))
 
 def remove_fonts(fonts):
-	user_font_directory = get_user_font_directory()
-	for font in fonts:
-		if font in ONLINE_FONT_LIBRARY.keys():
-			print("Removing %s..." % (font))
-			files_to_remove = ONLINE_FONT_LIBRARY[font]["keep-files"]
-			font_file_installed_path = os.path.join(user_font_directory, os.path.basename(expected_file))
-			if os.path.exists(font_file_installed_path):
-				shutil.unlink(font_file_installed_path)
-				print("  Deleted file \"%s\"." % (font_file_installed_path))
-		else:
-			print("No such font: \"%s\"" % (font))
+    user_font_directory = get_user_font_directory()
+    for font in fonts:
+        if font in ONLINE_FONT_LIBRARY.keys():
+            print("Removing %s..." % (font))
+            files_to_remove = ONLINE_FONT_LIBRARY[font]["keep-files"]
+            for file_to_remove in files_to_remove:
+                font_file_installed_path = os.path.join(user_font_directory, os.path.basename(file_to_remove))
+                if os.path.exists(font_file_installed_path):
+                    os.unlink(font_file_installed_path)
+                    print("  Deleted file \"%s\"." % (font_file_installed_path))
+                else:
+                    print("  File \"%s\" does not exist." % (font_file_installed_path))
+        else:
+            print("No such font: \"%s\"" % (font))
 
 def list_installed_fonts():
-	user_font_directory = get_user_font_directory()
-	for font_name, font_data in ONLINE_FONT_LIBRARY.items():
-		font_files_expected = len(font_data["keep-files"])
-		font_files_found = 0
-		for expected_file in font_data["keep-files"]:
-			if os.path.exists(os.path.join(user_font_directory, os.path.basename(expected_file))):
-				font_files_found = font_files_found + 1
-		if font_files_found == font_files_expected:
-			is_installed = "Installed"
-		elif font_files_found == 0:
-			is_installed = "Not installed"
-		else:
-			is_installed = "Partially installed/Broken"
-		spacing = " " * (20 - len(font_name))
-		print("%s%s%s" % (font_name, spacing, is_installed))
+    user_font_directory = get_user_font_directory()
+    for font_name, font_data in ONLINE_FONT_LIBRARY.items():
+        font_files_expected = len(font_data["keep-files"])
+        font_files_found = 0
+        for expected_file in font_data["keep-files"]:
+            if os.path.exists(os.path.join(user_font_directory, os.path.basename(expected_file))):
+                font_files_found = font_files_found + 1
+        if font_files_found == font_files_expected:
+            is_installed = "Installed"
+        elif font_files_found == 0:
+            is_installed = "Not installed"
+        else:
+            is_installed = "Partially installed/Broken"
+        spacing = " " * (20 - len(font_name))
+        print("%s%s%s" % (font_name, spacing, is_installed))
 
 def update_font_cache():
-	os.system("fc-cache -f")
+    os.system("fc-cache -f")
 
 def usage():
-	this_command = sys.argv[0]
-	print("Usage: %s" % (this_command))
-	print("  install ...  Installs one or more user fonts.")
-	print("  remove ...   Removes user fonts.")
-	print("  list         Lists user fonts installed by %s." % (this_command))
-	print("  reload       Calls `fc-cache -f'.")
-	print()
+    this_command = sys.argv[0]
+    print("Usage: %s" % (this_command))
+    print("  install ...  Installs one or more user fonts.")
+    print("  remove ...   Removes user fonts.")
+    print("  list         Lists user fonts installed by %s." % (this_command))
+    print("  reload       Calls `fc-cache -f'.")
+    print()
 
 def main():
-	passed_arguments = len(sys.argv)
-	if passed_arguments < 2:
-		usage()
-		exit()
+    passed_arguments = len(sys.argv)
+    if passed_arguments < 2:
+        usage()
+        exit()
 
-	action = sys.argv[1]
+    action = sys.argv[1]
 
-	if action in ["install", "remove"]:
-		if passed_arguments < 3:
-			usage()
-			exit()
+    if action in ["install", "remove"]:
+        if passed_arguments < 3:
+            usage()
+            exit()
 
-		action_items = sys.argv[2:]
+        action_items = sys.argv[2:]
 
-		if action == "install":
-			install_fonts(action_items)
-		elif action == "remove":
-			remove_fonts(action_items)
-		else:
-			raise Exception()
+        if action == "install":
+            install_fonts(action_items)
+        elif action == "remove":
+            remove_fonts(action_items)
+        else:
+            raise Exception()
 
-	elif action in ["list", "reload"]:
-		if passed_arguments > 2:
-			usage()
-			exit()
-		else:
-			if action == "list":
-				list_installed_fonts()
-			elif action == "reload":
-				update_font_cache()
-			else:
-				raise Exception()
-	else:
-		usage()
-		exit()
+    elif action in ["list", "reload"]:
+        if passed_arguments > 2:
+            usage()
+            exit()
+        else:
+            if action == "list":
+                list_installed_fonts()
+            elif action == "reload":
+                update_font_cache()
+            else:
+                raise Exception()
+    else:
+        usage()
+        exit()
 
 if __name__ == "__main__":
-	main()
+    main()
 
