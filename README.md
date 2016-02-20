@@ -18,14 +18,14 @@ You could do a system wide install with something like:
 
 Install the font "Fantasque Sans Mono" for your current user:
 
-    fontlibman install fantasque
-    fontlibman reload
+    fontlibman --install fantasque
+    fontlibman --reload
 
 See what fonts are installed:
 
-    fontlibman list
+    fontlibman --list
 
 Remove unwanted font "Fantasque Sans Mono" installed by `fontlibman`:
 
-    fontlibman remove fantasque
+    fontlibman --remove fantasque
 
