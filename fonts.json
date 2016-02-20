@@ -1,0 +1,40 @@
+{
+    "fantasque": {
+        "download-url": "https://fontlibrary.org/assets/downloads/fantasque-sans-mono/db52617ba875d08cbd8e080ca3d9f756/fantasque-sans-mono.zip",
+        "tags": "monospace",
+        "keep-files": [
+            "FantasqueSansMono-BoldItalic.ttf",
+            "FantasqueSansMono-Bold.ttf",
+            "FantasqueSansMono-RegItalic.ttf",
+            "FantasqueSansMono-Regular.ttf"
+        ]
+    },
+    "hack": {
+        "download-url": "https://fontlibrary.org/assets/downloads/hack/73a447a6923d284e62830693346088f7/hack.zip",
+        "tags": "monospace",
+        "keep-files": [
+            "Hack-Bold.ttf",
+            "Hack-BoldItalic.ttf",
+            "Hack-Italic.ttf",
+            "Hack-Regular.ttf"
+        ]
+    },
+    "inconsolata": {
+        "download-url": "https://fontlibrary.org/assets/downloads/inconsolata/116abd9f4a9fd70b84171195ea8173d8/inconsolata.zip",
+        "tags": "monospace",
+        "keep-files": [
+            "inconsolata/Inconsolata.otf"
+        ]
+    },
+    "firacode": {
+        "download-url": "https://github.com/tonsky/FiraCode/archive/master.zip",
+        "tags": "monospace",
+        "keep-files": [
+            "FiraCode-master/FiraCode-Bold.otf",
+            "FiraCode-master/FiraCode-Light.otf",
+            "FiraCode-master/FiraCode-Medium.otf",
+            "FiraCode-master/FiraCode-Regular.otf",
+            "FiraCode-master/FiraCode-Retina.otf"
+        ]
+    }
+}

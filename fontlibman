@@ -6,35 +6,11 @@ import requests
 import shutil
 import sys
 import zipfile
+import json
 
+FONTLIBMAN_VERSION = "0.1.0"
 TEMP_DIRECTORY = "/tmp/fontlibman/"
-
-ONLINE_FONT_LIBRARY = {
-        "fantasque": {
-            "download-url": "https://fontlibrary.org/assets/downloads/fantasque-sans-mono/db52617ba875d08cbd8e080ca3d9f756/fantasque-sans-mono.zip",
-            "keep-files": [
-                "FantasqueSansMono-BoldItalic.ttf",
-                "FantasqueSansMono-Bold.ttf",
-                "FantasqueSansMono-RegItalic.ttf",
-                "FantasqueSansMono-Regular.ttf",
-                ],
-            },
-        "hack": {
-            "download-url": "https://fontlibrary.org/assets/downloads/hack/73a447a6923d284e62830693346088f7/hack.zip",
-            "keep-files": [
-                "Hack-Bold.ttf",
-                "Hack-BoldItalic.ttf",
-                "Hack-Italic.ttf",
-                "Hack-Regular.ttf",
-                ],
-            },
-        "inconsolata": {
-            "download-url": "https://fontlibrary.org/assets/downloads/inconsolata/116abd9f4a9fd70b84171195ea8173d8/inconsolata.zip",
-            "keep-files": [
-                "inconsolata/Inconsolata.otf",
-                ],
-            },
-        }
+ONLINE_FONT_LIBRARY = json.loads(open("fonts.json", "r").read())
 
 def download_font(download_url, font_name):
     local_filename = TEMP_DIRECTORY + font_name + ".zip"
@@ -138,10 +114,11 @@ def update_font_cache():
 def usage():
     this_command = sys.argv[0]
     print("Usage: %s" % (this_command))
-    print("  install ...  Installs one or more user fonts.")
-    print("  remove ...   Removes user fonts.")
-    print("  list         Lists user fonts installed by %s." % (this_command))
-    print("  reload       Calls `fc-cache -f'.")
+    print("  --install ...  Installs one or more user fonts.")
+    print("  --remove ...   Removes user fonts.")
+    print("  --list         Lists fonts available to %s." % (this_command))
+    print("  --reload       Calls `fc-cache -f'.")
+    print("  --version      Show version.")
     print()
 
 def main():
@@ -152,29 +129,31 @@ def main():
 
     action = sys.argv[1]
 
-    if action in ["install", "remove"]:
+    if action in ["--install", "--remove"]:
         if passed_arguments < 3:
             usage()
             exit()
 
         action_items = sys.argv[2:]
 
-        if action == "install":
+        if action == "--install":
             install_fonts(action_items)
-        elif action == "remove":
+        elif action == "--remove":
             remove_fonts(action_items)
         else:
             raise Exception()
 
-    elif action in ["list", "reload"]:
+    elif action in ["--list", "--reload", "--version"]:
         if passed_arguments > 2:
             usage()
             exit()
         else:
-            if action == "list":
+            if action == "--list":
                 list_installed_fonts()
-            elif action == "reload":
+            elif action == "--reload":
                 update_font_cache()
+            elif action == "--version":
+                print(FONTLIBMAN_VERSION)
             else:
                 raise Exception()
     else:
