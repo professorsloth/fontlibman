@@ -1,4 +1,5 @@
 # fontlibman
+![fontlibman](http://serene.springtime.space/content/fontlibman.jpg)
 
 Manages user fonts in the `~/.fonts` directory. Fetches fonts from `fontlibrary.org`, `github.com`.
 
