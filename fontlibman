@@ -8,7 +8,7 @@ import sys
 import zipfile
 import json
 
-FONTLIBMAN_VERSION = "0.1.0"
+FONTLIBMAN_VERSION = "0.2.0"
 TEMP_DIRECTORY = "/tmp/fontlibman/"
 ONLINE_FONT_LIBRARY = json.loads(open("fonts.json", "r").read())
 
@@ -111,54 +111,27 @@ def list_installed_fonts():
 def update_font_cache():
     os.system("fc-cache -f")
 
-def usage():
-    this_command = sys.argv[0]
-    print("Usage: %s" % (this_command))
-    print("  --install ...  Installs one or more user fonts.")
-    print("  --remove ...   Removes user fonts.")
-    print("  --list         Lists fonts available to %s." % (this_command))
-    print("  --reload       Calls `fc-cache -f'.")
-    print("  --version      Show version.")
-    print()
-
 def main():
-    passed_arguments = len(sys.argv)
-    if passed_arguments < 2:
-        usage()
-        exit()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-l", "--list", action='store_true', help="List fonts available, and their install status.")
+    parser.add_argument("-i", "--install", type=str, help="Install one user font.")
+    parser.add_argument("-d", "--delete", type=str, help="Delete one font from your local collection.")
+    parser.add_argument("-r", "--reload", action='store_true', help="Reload font cache.")
+    parser.add_argument("-v", "--version", action='store_true', help="Show version.")
+    args = parser.parse_args()
 
-    action = sys.argv[1]
-
-    if action in ["--install", "--remove"]:
-        if passed_arguments < 3:
-            usage()
-            exit()
-
-        action_items = sys.argv[2:]
-
-        if action == "--install":
-            install_fonts(action_items)
-        elif action == "--remove":
-            remove_fonts(action_items)
-        else:
-            raise Exception()
-
-    elif action in ["--list", "--reload", "--version"]:
-        if passed_arguments > 2:
-            usage()
-            exit()
-        else:
-            if action == "--list":
-                list_installed_fonts()
-            elif action == "--reload":
-                update_font_cache()
-            elif action == "--version":
-                print(FONTLIBMAN_VERSION)
-            else:
-                raise Exception()
+    if args.install:
+        install_fonts([args.install])
+    elif args.delete:
+        remove_fonts([args.delete])
+    elif args.list:
+        list_installed_fonts()
+    elif args.reload:
+        update_font_cache()
+    elif args.version:
+        print(FONTLIBMAN_VERSION)
     else:
-        usage()
-        exit()
+        print("Failed to handle argument.")
 
 if __name__ == "__main__":
     main()

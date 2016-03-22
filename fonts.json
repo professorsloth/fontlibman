@@ -36,5 +36,14 @@
             "FiraCode-master/FiraCode-Regular.otf",
             "FiraCode-master/FiraCode-Retina.otf"
         ]
+    },
+    "firamono": {
+        "download-url": "https://github.com/mozilla/Fira/archive/master.zip",
+        "tags": "monospace",
+        "keep-files": [
+            "Fira-master/otf/FiraMono-Bold.otf",
+            "Fira-master/otf/FiraMono-Medium.otf",
+            "Fira-master/otf/FiraMono-Regular.otf"
+        ]
     }
 }
