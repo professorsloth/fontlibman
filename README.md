@@ -3,6 +3,13 @@
 
 Manages user fonts in the `~/.fonts` directory. Fetches fonts from `fontlibrary.org`, `github.com`.
 
+Tested on Debian and Fedora.
+
+## Prerequisites
+
+ * Python 3
+ * [requests](http://docs.python-requests.org/en/master/user/install/#install) for Python 3
+
 ## Installation
 
     git clone https://github.com/professorsloth/fontlibman.git
