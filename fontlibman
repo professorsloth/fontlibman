@@ -8,7 +8,7 @@ import sys
 import zipfile
 import json
 
-FONTLIBMAN_VERSION = "0.2.0"
+FONTLIBMAN_VERSION = "0.2.1"
 TEMP_DIRECTORY = "/tmp/fontlibman/"
 ONLINE_FONT_LIBRARY = json.loads(open("fonts.json", "r").read())
 
@@ -133,7 +133,7 @@ def main():
     elif args.version:
         print(FONTLIBMAN_VERSION)
     else:
-        print("Failed to handle argument.")
+        parser.print_help()
 
 if __name__ == "__main__":
     main()

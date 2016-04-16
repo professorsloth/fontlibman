@@ -31,3 +31,9 @@ Delete unwanted font "Fantasque Sans Mono" installed by `fontlibman`:
 
     fontlibman --delete fantasque
 
+## Changelog
+
+### 0.2.1
+
+ * Now prints usage section when no argument is provided.
+
